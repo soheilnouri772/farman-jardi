@@ -1,0 +1,32 @@
+workflows:
+  build-ios:
+    name: Build iOS for Farman Jardi
+    environment:
+      xcode: 15.0
+      vars:
+        XCODE_PROJECT: "FarmanJardi_XcodeExport/Unity-iPhone.xcodeproj"
+        XCODE_SCHEME: "Unity-iPhone"
+    scripts:
+      - name: Build iOS .ipa
+        script: |
+          xcodebuild clean archive \
+          -project "$XCODE_PROJECT" \
+          -scheme "$XCODE_SCHEME" \
+          -configuration Release \
+          -archivePath "$HOME/build/Unity-iPhone.xcarchive" \
+          SKIP_INSTALL=NO \
+          BUILD_LIBRARY_FOR_DISTRIBUTION=YES
+
+          xcodebuild -exportArchive \
+          -archivePath "$HOME/build/Unity-iPhone.xcarchive" \
+          -exportOptionsPlist exportOptions.plist \
+          -exportPath "$HOME/build/ipa"
+    artifacts:
+      - build/ipa/*.ipa
+    publishing:
+      email:
+        recipients:
+          - soheilnouri681@gmail.com
+        notify:
+          success: true
+          failure: true
